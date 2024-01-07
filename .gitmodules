@@ -1,0 +1,6 @@
+[submodule "bitnami-charts"]
+	path = bitnami-charts
+	url = git@github.com:AmitAronovitch/bitnami-charts.git
+[submodule "cloudflare-charts"]
+	path = cloudflare-charts
+	url = git@github.com:AmitAronovitch/cloudflare-charts.git
