@@ -4,3 +4,6 @@
 [submodule "cloudflare-charts"]
 	path = cloudflare-charts
 	url = git@github.com:AmitAronovitch/cloudflare-charts.git
+[submodule "ananace-charts"]
+	path = ananace-charts
+	url = git@gitlab.com:ananace/charts.git
