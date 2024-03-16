@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "mautrix-telegram.fullname" . }}
+  labels:
+    {{- include "mautrix-telegram.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "mautrix-telegram.fullname" . }}
+  replicas: 1
+  minReadySeconds: 1
+  selector:
+    matchLabels:
+      {{- include "mautrix-telegram.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mautrix-telegram.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mautrix-telegram.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: '{{ .Values.image.repository }}:{{ include "mautrix-telegram.imageTag" . }}'
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - python3
+            - -m
+            - mautrix-telegram
+            - --no-update
+            - -c
+            - /config/config.yaml
+          ports:
+            - name: http
+              containerPort: {{ .Values.appservice.port }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.appservice.metrics.listen_port }}
+              protocol: TCP
+          {{- if .Values.probes.enable }}
+          livenessProbe:
+            httpGet:
+              path: /_matrix/mau/live
+              port: http
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: /_matrix/mau/live
+              port: http
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+          startupProbe:
+            httpGet:
+              path: /_matrix/mau/live
+              port: http
+            initialDelaySeconds: {{ .Values.probes.startup.initialDelaySeconds }}
+            failureThreshold: {{ .Values.probes.startup.failureThreshold }}
+            periodSeconds: {{ .Values.probes.startup.periodSeconds }}
+          {{- end}}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: secret-config
+              mountPath: /config
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: secret-config
+          secret:
+            secretName: {{ include "mautrix-telegram.fullname" . }}
+        {{- with .Values.volumes }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates: []
+  # - metadata:
+  #     name: www
+  #   spec:
+  #     accessModes: [ "ReadWriteOncePod" ]
+  #     storageClassName: "my-storage-class"
+  #     resources:
+  #       requests:
+  #         storage: 1Gi
