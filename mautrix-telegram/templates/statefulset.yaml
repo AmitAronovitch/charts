@@ -39,7 +39,7 @@ spec:
           command:
             - python3
             - -m
-            - mautrix-telegram
+            - mautrix_telegram
             - --no-update
             - -c
             - /config/config.yaml
