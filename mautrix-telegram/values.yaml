@@ -37,8 +37,6 @@
 #     - regex: '@.*:example.com
 #       exclusive: false
 
-replicaCount: 1
-
 appservice:
   hostname: 0.0.0.0
   port: 29317
@@ -144,7 +142,6 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
   port: 29317
   metricsPort: 8000
 
