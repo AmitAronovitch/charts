@@ -37,7 +37,7 @@ spec:
           image: '{{ .Values.image.repository }}:{{ include "mautrix-discord.imageTag" . }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - mautrix_discord
+            - /usr/bin/mautrix-discord
             - --no-update
             - -c
             - /config/config.yaml
