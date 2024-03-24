@@ -13,8 +13,6 @@ spec:
       command: ['wget']
       args:
         - '-O-'
-        - '--post-data='
-        - '--header'
-        - 'Authorization: Bearer {{ .Values.appservice.hs_token }}'
-        - '{{ include "mautrix-telegram.fullname" . }}:{{ .Values.service.port }}/_matrix/app/v1/ping'
+        - '-S'
+        - '{{ include "mautrix-telegram.fullname" . }}:{{ .Values.service.port }}/_matrix/mau/live'
   restartPolicy: Never

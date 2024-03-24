@@ -5,7 +5,8 @@ metadata:
   labels:
     {{- include "mautrix-discord.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  clusterIP: None
+  publishNotReadyAddresses: true
   ports:
     - port: {{ .Values.service.port }}
       targetPort: http

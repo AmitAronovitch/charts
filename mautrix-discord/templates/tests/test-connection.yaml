@@ -11,5 +11,8 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "mautrix-discord.fullname" . }}:{{ .Values.service.port }}']
+      args:
+        - '-O-'
+        - '-S'
+        - '{{ include "mautrix-discord.fullname" . }}:{{ .Values.service.port }}/_matrix/mau/live'
   restartPolicy: Never

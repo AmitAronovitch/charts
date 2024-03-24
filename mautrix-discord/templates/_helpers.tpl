@@ -60,3 +60,17 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Get the correct image tag name
+*/}}
+{{- define "mautrix-discord.imageTag" -}}
+{{- .Values.image.tag | default (printf "v%s" .Chart.AppVersion) -}}
+{{- end }}
+
+{{/*
+The address that the homeserver can use to connect to this appservice
+*/}}
+{{- define "mautrix-discord.serviceurl" -}}
+{{- .Values.appservice.address | default (printf "http://%s:%d" (include "mautrix-discord.fullname" .) (int .Values.service.port) ) -}}
+{{- end }}
